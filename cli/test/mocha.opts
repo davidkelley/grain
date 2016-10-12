@@ -1,0 +1,3 @@
+--recursive
+--require ./test/mocha.init.js
+--ui bdd

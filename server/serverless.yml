@@ -27,6 +27,7 @@ plugins:
   - serverless-mocha-plugin
 
 functions:
+
   latest:
     handler: handler.latest
     events:
@@ -34,6 +35,11 @@ functions:
           path: latest
           method: GET
           private: true
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+            template: $input.path('$')
+
   enumerator:
     handler: handler.enumerator
     events:
@@ -41,6 +47,11 @@ functions:
           path: latest/meta-data/iam/security-credentials
           method: GET
           private: true
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+            template: $input.path('$')
+
   credentials:
     handler: handler.credentials
     events:
@@ -48,6 +59,7 @@ functions:
           path: latest/meta-data/iam/security-credentials/{role}
           method: GET
           private: true
+
   identifier:
     handler: handler.identifier
     events:
@@ -55,6 +67,11 @@ functions:
           path: latest/meta-data/instance-id
           method: GET
           private: true
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+            template: $input.path('$')
+
   zone:
     handler: handler.zone
     events:
@@ -62,6 +79,11 @@ functions:
           path: latest/meta-data/placement/availability-zone
           method: GET
           private: true
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+            template: $input.path('$')
+
   hostname:
     handler: handler.hostname
     events:
@@ -69,6 +91,10 @@ functions:
           path: latest/meta-data/public-hostname
           method: GET
           private: true
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+            template: $input.path('$')
 
 resources:
   Resources:

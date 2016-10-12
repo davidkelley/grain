@@ -1,6 +1,6 @@
 'use strict';
 
-import { OK, BAD_REQUEST, ERROR } from './constants';
+import { OK, BAD_REQUEST, ERROR } from '../constants';
 import Promise from 'bluebird';
 
 export function Response(cb) {
@@ -38,20 +38,12 @@ class Request {
   }
 
   get headers() {
-    return this.event.headers;
+    return this.event.headers
   }
 
   get path() {
     return this.event.path;
   }
-
-  // get identity() {
-  //   return Immutable.Map(this.event.identity);
-  // }
-
-  // get vars() {
-  //   return Immutable.Map(this.event.stageVariables);
-  // }
 }
 
 export default Request;

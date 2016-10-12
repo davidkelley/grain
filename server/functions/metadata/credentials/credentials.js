@@ -1,12 +1,16 @@
 'use strict';
 
-import { OK, ERROR } from '../../events/constants';
-import Request, { Wrap } from '../../events/http';
+import { OK, ERROR } from '../../../constants';
+import Request, { Wrap } from '../../../events/http';
 import Promise from 'bluebird';
 import moment from 'moment';
 import AWS from 'aws-sdk';
 
 const REGION = process.env.AWS_REGION
+
+const ASSUME_ROLE = 'assumeRole';
+
+const GET_ROLE = 'getRole';
 
 class Credentials extends Request {
   get identifier() {
@@ -38,12 +42,13 @@ class Credentials extends Request {
 
   perform() {
     let { cb, response } = this;
-    this.iam('getRole', { RoleName: this.role }).then((data) => {
-      var arn = data.Role.Arn;
-      this.sts('assumeRole', { RoleArn: arn, ...this.params }).then((data) => {
-        cb(OK, response(data))
-      }).catch(err => cb(ERROR, err));
-    }).catch(err => cb(ERROR, err));
+    cb(OK, this.event);
+    // this.iam(GET_ROLE, { RoleName: this.role }).then((data) => {
+    //   var arn = data.Role.Arn;
+    //   this.sts(ASSUME_ROLE, { RoleArn: arn, ...this.params }).then((data) => {
+    //     cb(OK, response(data))
+    //   }).catch(err => cb(ERROR, err));
+    // }).catch(err => cb(ERROR, err));
   }
 
   iam(op, params) {

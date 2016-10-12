@@ -1,7 +1,7 @@
 'use strict';
 
-import { OK } from '../../events/constants';
-import Request, { Wrap } from '../../events/http';
+import { OK } from '../../../constants';
+import Request, { Wrap } from '../../../events/http';
 
 const REGION = process.env.AWS_REGION
 

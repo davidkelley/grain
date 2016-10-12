@@ -1,7 +1,7 @@
 'use strict';
 
-import { OK, ROLE } from '../../events/constants';
-import Request, { Wrap } from '../../events/http';
+import { OK, ROLE } from '../../../constants';
+import Request, { Wrap } from '../../../events/http';
 
 class Identifier extends Request {
   perform() {

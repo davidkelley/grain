@@ -1,0 +1,5 @@
+foo
+bar
+lol
+happy
+funny

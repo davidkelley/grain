@@ -1,0 +1,30 @@
+{
+  "sourceMaps": "inline",
+  "presets": [
+    "es2015",
+    "stage-0"
+  ],
+  "plugins": [
+    "add-module-exports",
+    "transform-decorators-legacy"
+  ],
+  "env": {
+    "production": {
+      "retainLines": false,
+      "minified": true
+    },
+    "development": {
+      "retainLines": true,
+      "plugins": [
+        "transform-runtime"
+      ]
+    },
+    "test": {
+      "retainLines": true,
+      "plugins": [
+        "transform-runtime",
+        "istanbul"
+      ]
+    }
+  }
+}

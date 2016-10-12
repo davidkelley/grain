@@ -1,11 +1,12 @@
 'use strict';
 
-import { OK, PATH } from '../../events/constants';
-import Request, { Wrap } from '../../events/http';
+import { OK, PATH } from '../../../constants';
+import Request, { Wrap } from '../../../events/http';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
 
 const REGION = process.env.AWS_REGION;
+
 const LIST_ROLES = 'listRoles';
 
 class Enumerator extends Request {
