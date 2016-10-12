@@ -1,0 +1,6 @@
+{
+  "name": "hostname",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./hostname.js"
+}

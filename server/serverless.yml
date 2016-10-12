@@ -1,0 +1,96 @@
+service: grain
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  apiKeys:
+    - master
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "*"
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "sts:AssumeRole"
+      Resource: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":role/grain/*" ] ] }
+    - Effect: "Allow"
+      Action:
+        - "iam:GetRole"
+      Resource: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":role/grain/*" ] ] }
+    - Effect: "Allow"
+      Action:
+        - "iam:ListRoles"
+      Resource: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":role/grain/" ] ] }
+
+plugins:
+  - serverless-webpack
+  - serverless-mocha-plugin
+
+functions:
+  latest:
+    handler: handler.latest
+    events:
+      - http:
+          path: latest
+          method: GET
+          private: true
+  enumerator:
+    handler: handler.enumerator
+    events:
+      - http:
+          path: latest/meta-data/iam/security-credentials
+          method: GET
+          private: true
+  credentials:
+    handler: handler.credentials
+    events:
+      - http:
+          path: latest/meta-data/iam/security-credentials/{role}
+          method: GET
+          private: true
+  identifier:
+    handler: handler.identifier
+    events:
+      - http:
+          path: latest/meta-data/instance-id
+          method: GET
+          private: true
+  zone:
+    handler: handler.zone
+    events:
+      - http:
+          path: latest/meta-data/placement/availability-zone
+          method: GET
+          private: true
+  hostname:
+    handler: handler.hostname
+    events:
+      - http:
+          path: latest/meta-data/public-hostname
+          method: GET
+          private: true
+
+resources:
+  Resources:
+    DeveloperRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        Path: "/grain/"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Sid: "account"
+              Effect: "Allow"
+              Principal:
+                AWS: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":root" ] ] }
+              Action:
+                - "sts:AssumeRole"
+        Policies:
+          - PolicyName: "root"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                -
+                  Effect: "Allow"
+                  Action: "*"
+                  Resource: "*"

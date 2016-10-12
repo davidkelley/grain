@@ -1,0 +1,33 @@
+daemon off;
+
+events {
+  worker_connections  4096;
+}
+
+http {
+  proxy_cache_path /nginx/cache levels=1:2 keys_zone=metadata:10m max_size=100m inactive=10m use_temp_path=off;
+
+  server {
+    set $grain_secret "{{getenv "GRAIN_SECRET"}}";
+    set $grain_identifier "{{getenv "GRAIN_IDENTIFIER"}}";
+
+    listen {{getenv "LISTEN_ON"}};
+    listen [::]:{{getenv "LISTEN_ON"}};
+    server_name {{getenv "SERVER_NAME"}};
+
+    location / {
+      resolver 8.8.8.8;
+      
+      proxy_cache metadata;
+      proxy_cache_lock on;
+      proxy_ssl_server_name on;
+
+      set $endpoint "{{getenv "GRAIN_ENDPOINT"}}";
+
+      proxy_set_header X-Api-Key $grain_secret;
+      proxy_set_header X-Session-Identifier $grain_identifier;
+
+      proxy_pass https://$endpoint$uri;
+    }
+  }
+}

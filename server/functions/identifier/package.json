@@ -1,0 +1,6 @@
+{
+  "name": "identifier",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./identifier.js"
+}

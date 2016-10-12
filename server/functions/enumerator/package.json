@@ -1,0 +1,6 @@
+{
+  "name": "enumerator",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./enumerator.js"
+}
