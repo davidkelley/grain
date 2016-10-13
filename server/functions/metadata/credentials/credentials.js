@@ -23,32 +23,32 @@ class Credentials extends Request {
 
   get params() {
     return {
+      DurationSeconds: 3600,
       RoleSessionName: this.identifier
     }
   }
 
   response(data) {
-    let { AccessKeyId, SecretAccessKey, Expiration } = data.Credentials;
+    let { AccessKeyId, SecretAccessKey, Expiration, SessionToken } = data.Credentials;
     return {
       Code: "Success",
       LastUpdated: moment.utc().toISOString(),
       Type: "AWS-HMAC",
-      Token: data.SessionToken,
-      Expiration: moment(Expiration).toISOString(),
-      AccessKeyId,
-      SecretAccessKey
+      AccessKeyId: AccessKeyId,
+      SecretAccessKey: SecretAccessKey,
+      Token: SessionToken,
+      Expiration: moment(Expiration).toISOString()
     }
   }
 
   perform() {
     let { cb, response } = this;
-    cb(OK, this.event);
-    // this.iam(GET_ROLE, { RoleName: this.role }).then((data) => {
-    //   var arn = data.Role.Arn;
-    //   this.sts(ASSUME_ROLE, { RoleArn: arn, ...this.params }).then((data) => {
-    //     cb(OK, response(data))
-    //   }).catch(err => cb(ERROR, err));
-    // }).catch(err => cb(ERROR, err));
+    this.iam(GET_ROLE, { RoleName: this.role }).then((data) => {
+      var arn = data.Role.Arn;
+      this.sts(ASSUME_ROLE, { RoleArn: arn, ...this.params }).then((data) => {
+        cb(OK, response(data));
+      }).catch(err => cb(ERROR, err));
+    }).catch(err => cb(ERROR, err));
   }
 
   iam(op, params) {

@@ -9,18 +9,6 @@ provider:
     - Effect: "Allow"
       Action: "*"
       Resource: "*"
-    - Effect: "Allow"
-      Action:
-        - "sts:AssumeRole"
-      Resource: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":role/grain/*" ] ] }
-    - Effect: "Allow"
-      Action:
-        - "iam:GetRole"
-      Resource: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":role/grain/*" ] ] }
-    - Effect: "Allow"
-      Action:
-        - "iam:ListRoles"
-      Resource: { "Fn::Join" : ["", ["arn:aws:iam::", { "Ref" : "AWS::AccountId" }, ":role/grain/" ] ] }
 
 plugins:
   - serverless-webpack
@@ -28,17 +16,19 @@ plugins:
 
 functions:
 
-  latest:
-    handler: handler.latest
-    events:
-      - http:
-          path: latest
-          method: GET
-          private: true
-          response:
-            headers:
-              Content-Type: "'text/plain'"
-            template: $input.path('$')
+  # latest:
+  #   handler: handler.latest
+  #   events:
+  #     - http:
+  #         path: latest
+  #         method: GET
+  #         private: true
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             Content-Type: "'text/plain'"
+  #             Cache-Control: "'max-age=2592000'"
+  #           template: $input.path('$')
 
   enumerator:
     handler: handler.enumerator
@@ -47,6 +37,7 @@ functions:
           path: latest/meta-data/iam/security-credentials
           method: GET
           private: true
+          integration: lambda
           response:
             headers:
               Content-Type: "'text/plain'"
@@ -59,49 +50,59 @@ functions:
           path: latest/meta-data/iam/security-credentials/{role}
           method: GET
           private: true
-
-  identifier:
-    handler: handler.identifier
-    events:
-      - http:
-          path: latest/meta-data/instance-id
-          method: GET
-          private: true
+          integration: lambda
           response:
             headers:
-              Content-Type: "'text/plain'"
-            template: $input.path('$')
+              Cache-Control: "'max-age=1800'"
 
-  zone:
-    handler: handler.zone
-    events:
-      - http:
-          path: latest/meta-data/placement/availability-zone
-          method: GET
-          private: true
-          response:
-            headers:
-              Content-Type: "'text/plain'"
-            template: $input.path('$')
+  # identifier:
+  #   handler: handler.identifier
+  #   events:
+  #     - http:
+  #         path: latest/meta-data/instance-id
+  #         method: GET
+  #         private: true
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             Content-Type: "'text/plain'"
+  #             Cache-Control: "'max-age=2592000'"
+  #           template: $input.path('$')
 
-  hostname:
-    handler: handler.hostname
-    events:
-      - http:
-          path: latest/meta-data/public-hostname
-          method: GET
-          private: true
-          response:
-            headers:
-              Content-Type: "'text/plain'"
-            template: $input.path('$')
+  # zone:
+  #   handler: handler.zone
+  #   events:
+  #     - http:
+  #         path: latest/meta-data/placement/availability-zone
+  #         method: GET
+  #         private: true
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             Content-Type: "'text/plain'"
+  #             Cache-Control: "'max-age=2592000'"
+  #           template: $input.path('$')
+
+  # hostname:
+  #   handler: handler.hostname
+  #   events:
+  #     - http:
+  #         path: latest/meta-data/public-hostname
+  #         method: GET
+  #         private: true
+  #         integration: lambda
+  #         response:
+  #           headers:
+  #             Content-Type: "'text/plain'"
+  #             Cache-Control: "'max-age=2592000'"
+  #           template: $input.path('$')
 
 resources:
   Resources:
     DeveloperRole:
       Type: "AWS::IAM::Role"
       Properties:
-        Path: "/grain/"
+        Path: "/grain/developer/"
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:
