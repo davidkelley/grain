@@ -20,10 +20,10 @@ class Profiler {
         }
 
         var profile = profiles[name]
-        if(profile) {
-          resolve(profile)
-        } else {
+        if( ! profile) {
           reject(new Error(`Profile "${name}" not found.`))
+        } else {
+          resolve(profile)
         }
       })
     });

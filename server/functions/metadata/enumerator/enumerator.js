@@ -16,7 +16,7 @@ class Enumerator extends Request {
 
   perform() {
     let { cb, stage } = this;
-    this.iam(LIST_ROLES, { PathPrefix: `${PATH}/${stage}` }).then((data) => {
+    this.iam(LIST_ROLES, { PathPrefix: `${PATH}/${REGION}/${stage}` }).then((data) => {
       cb(OK, data.Roles.map(r => r.RoleName).join("\n"));
     });
   }

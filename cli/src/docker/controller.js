@@ -63,9 +63,13 @@ class Controller {
   stop() {
     return new Promise((resolve, reject) => {
       this.state.read().then((id) => {
-        if(id) {
+        if( ! id) {
+          resolve()
+        } else {
           var container = this.Docker.getContainer(id);
-          if(container) {
+          if( ! container) {
+            resolve()
+          } else {
             container.stop((err, data) => {
               if(err && err.statusCode != 304) {
                 reject(err);
@@ -81,11 +85,7 @@ class Controller {
                 });
               }
             })
-          } else {
-            resolve();
           }
-        } else {
-          resolve();
         }
       }).catch(reject);
     });
@@ -94,9 +94,13 @@ class Controller {
   resume() {
     return new Promise((resolve, reject) => {
       this.state.read().then((id) => {
-        if(id) {
+        if( ! id) {
+          reject(new Error('No existing profile to resume'));
+        } else {
           var container = this.Docker.getContainer(id);
-          if(container) {
+          if( ! container) {
+            reject(new Error('Existing state. But container not found'));
+          } else {
             container.start({}, (err, data) => {
               if(err) {
                 reject(err, container);
@@ -112,11 +116,7 @@ class Controller {
                 })
               }
             })
-          } else {
-            reject(new Error('Existing state. But container not found'))
           }
-        } else {
-          reject(new Error('No existing profile to resume'));
         }
       })
     });

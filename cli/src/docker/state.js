@@ -11,10 +11,10 @@ class State {
   delete() {
     return new Promise((resolve, reject) => {
       fs.unlink(this.path, (err) => {
-        if(!err || (err && err.code === 'ENOENT')) {
-          resolve();
-        } else {
+        if(err && err.code !== 'ENOENT') {
           reject(err);
+        } else {
+          resolve();
         }
       });
     })
@@ -30,10 +30,10 @@ class State {
     return new Promise((resolve, reject) => {
       fs.readFile(this.path, 'utf8', (err, data) => {
         if(err) {
-          if(err.code === 'ENOENT') {
-            resolve(null);
-          } else {
+          if(err.code !== 'ENOENT') {
             reject(err);
+          } else {
+            resolve(null);
           }
         } else {
           resolve(data);

@@ -1,6 +1,6 @@
 {
-  "name": "latest",
+  "name": "login",
   "version": "0.0.0",
   "private": true,
-  "main": "./latest.js"
+  "main": "./index.js"
 }

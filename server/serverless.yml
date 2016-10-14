@@ -16,22 +16,9 @@ plugins:
 
 functions:
 
-  # latest:
-  #   handler: handler.latest
-  #   events:
-  #     - http:
-  #         path: latest
-  #         method: GET
-  #         private: true
-  #         integration: lambda
-  #         response:
-  #           headers:
-  #             Content-Type: "'text/plain'"
-  #             Cache-Control: "'max-age=2592000'"
-  #           template: $input.path('$')
-
   enumerator:
     handler: handler.enumerator
+    description: "Enumerates over '${opt:stage}' IAM Role resources"
     events:
       - http:
           path: latest/meta-data/iam/security-credentials
@@ -41,10 +28,12 @@ functions:
           response:
             headers:
               Content-Type: "'text/plain'"
+              Cache-Control: "'max-age=20'"
             template: $input.path('$')
 
   credentials:
     handler: handler.credentials
+    description: "Assumes a specific '${opt:region}/${opt:stage}' IAM role"
     events:
       - http:
           path: latest/meta-data/iam/security-credentials/{role}
@@ -55,54 +44,12 @@ functions:
             headers:
               Cache-Control: "'max-age=1800'"
 
-  # identifier:
-  #   handler: handler.identifier
-  #   events:
-  #     - http:
-  #         path: latest/meta-data/instance-id
-  #         method: GET
-  #         private: true
-  #         integration: lambda
-  #         response:
-  #           headers:
-  #             Content-Type: "'text/plain'"
-  #             Cache-Control: "'max-age=2592000'"
-  #           template: $input.path('$')
-
-  # zone:
-  #   handler: handler.zone
-  #   events:
-  #     - http:
-  #         path: latest/meta-data/placement/availability-zone
-  #         method: GET
-  #         private: true
-  #         integration: lambda
-  #         response:
-  #           headers:
-  #             Content-Type: "'text/plain'"
-  #             Cache-Control: "'max-age=2592000'"
-  #           template: $input.path('$')
-
-  # hostname:
-  #   handler: handler.hostname
-  #   events:
-  #     - http:
-  #         path: latest/meta-data/public-hostname
-  #         method: GET
-  #         private: true
-  #         integration: lambda
-  #         response:
-  #           headers:
-  #             Content-Type: "'text/plain'"
-  #             Cache-Control: "'max-age=2592000'"
-  #           template: $input.path('$')
-
 resources:
   Resources:
-    DeveloperRole:
+    Role:
       Type: "AWS::IAM::Role"
       Properties:
-        Path: "/grain/developer/"
+        Path: "/grain/${opt:region}/${opt:stage}/"
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:
@@ -113,11 +60,17 @@ resources:
               Action:
                 - "sts:AssumeRole"
         Policies:
-          - PolicyName: "root"
+          - PolicyName: "RestrictIAMAccess"
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
-                -
-                  Effect: "Allow"
-                  Action: "*"
+                - Effect: "Deny"
+                  Action: "iam:*"
+                  Resource: "*"
+                - Effect: "Allow"
+                  Action:
+                    - "iam:GenerateCredentialReport"
+                    - "iam:GenerateServiceLastAccessedDetails"
+                    - "iam:Get*"
+                    - "iam:List*"
                   Resource: "*"
