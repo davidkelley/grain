@@ -31,8 +31,8 @@ export default [
     action: Resume
   },
   {
-    command: 'login <alias>',
-    description: 'Logs the active profile role into an AWS Account console for an alias',
+    command: 'login <alias> [page]',
+    description: 'Logs the active profile role into an AWS Account console for an alias, opening at an optional page.',
     action: Login
   },
   {

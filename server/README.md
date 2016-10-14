@@ -6,6 +6,8 @@ For example, deploying a stage `development` on the AWS Region `us-east-1` (`-s 
 
 The initial setup also creates a "master" API Key which can be used to create keys via the CLI, for users on the associated stage.
 
+The deployment process can be repeated for as many times as there are required access roles.
+
 ## Getting Started
 
 **All Docker containers provided in the Grain project are signed and verified. Never trust and don't ever deploy anything to your AWS Account from an unsigned container.**
