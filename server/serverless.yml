@@ -49,6 +49,7 @@ resources:
     Role:
       Type: "AWS::IAM::Role"
       Properties:
+        RoleName: "${opt:stage}.${opt:region}@grain"
         Path: "/grain/${opt:region}/${opt:stage}/"
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
