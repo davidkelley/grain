@@ -2,7 +2,7 @@
 
 The server component of Grain is written using the [Serverless Framework](https://github.com/serverless/serverless) and provides several lambda functions that emulate an API for the EC2 Metadata service. You can deploy the functions on multiple stages, in-order to determine the level of access provided for each stage. Such stages could be named, `read-only`, `development` or `administrator`.
 
-For example, deploying a stage `development` on the AWS Region `us-east-1` (`-s development -r us-east-1`), would create a role `development.us-east-1@grain`in IAM, that can be controlled by attaching custom or managed policies in the AWS Console.
+For example, deploying a stage `development` on the AWS Region `us-east-1` (`-s development -r us-east-1`), would create a role `grain-development-role` in IAM, that can be controlled by attaching custom or managed policies in the AWS Console.
 
 The initial setup also creates a "master" API Key which can be used to create keys via the CLI, for users on the associated stage.
 

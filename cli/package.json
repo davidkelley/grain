@@ -1,7 +1,6 @@
 {
-  "name": "grain",
-  "version": "0.1.0",
-  "private": true,
+  "name": "grain-cli",
+  "version": "0.0.1",
   "main": "dist/",
   "bin": {
     "grain": "grain.sh"

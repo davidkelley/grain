@@ -30,7 +30,33 @@ _For initial setup you'll need [Docker Content Trust](https://docs.docker.com/en
 
 ## Getting Started
 
-_TODO_
+#### Deploying Grain Server
+
+Before we can do anything else, we need to deploy the lambda functions that allow us to emulate the EC2 Metadata service locally. The Grain server is packaged as a [Docker container](https://hub.docker.com/r/davidkelley/grain/), that allows you to easily deploy the functions to a configured AWS Account.
+
+Your AWS Account always needs to be secure. In order to ensure that the code you'll be deploying to your AWS Account is safe, the official container is signed and trusted. **Do not deploy with any container that is not trusted.**
+
+As the container is signed, you'll need to enable [Docker Content Trust](https://docs.docker.com/engine/security/trust/content_trust/) inside your shell (if you haven't already). To do this, simply run:
+
+```
+export DOCKER_CONTENT_TRUST=1
+```
+
+Once this is done, lets deploy the functions using your AWS keys. In the following command, swap `<stage>` and `<region>` for a level of access (for example `"development"`) and an AWS region like `"us-east-1"`.
+
+```
+docker run -e AWS_SECRET_ACCESS_KEY=<secret> -e AWS_ACCESS_KEY_ID=<id> davidkelley/grain:server-v0.1.0 serverless deploy -s <stage> -r <region>
+```
+
+Docker will then download the container and deploy the functions to the configured AWS Account, as depicted in the image below.
+
+![Image of terminal deploying functions](https://github.com/davidkelley/grain/raw/master/.github/images/deploy-functions-output.png)
+
+In-order to setup the IAM Permissions for the stage you just deployed, we need to perform a one time configuration. Log into the AWS Console and attach any policies that the stage should have. As demonstrated in the screenshot below.
+
+![Attaching an IAM Policy](https://github.com/davidkelley/grain/raw/master/.github/images/default-empty-role.png)
+
+_TODO....._
 
 ## Contributing
 
