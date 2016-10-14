@@ -22,11 +22,14 @@ On your machine you'll need:
 
 * OS X, Linux or Windows
 * Node.JS & NPM
-* Docker
+* Docker (~v1.12)
 
 _For initial setup you'll need AWS Account Access Key ID & Secret Credentials._
 
 ## Getting Started
 
-0. Follow instructions for deploying the Grain Server [here](server/README.md).
-0. Follow instructions for setting up the Grain Client [here](client/README.md).
+_TODO_
+
+## Contributing
+
+Contributors are more than welcome! Please read the [Contributing Document](CONTRIBUTING.md) to learn how you can start working on the project yourself.
