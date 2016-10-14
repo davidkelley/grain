@@ -1,18 +1,20 @@
 import program from 'commander';
+
 import Commands from './commands';
 
 program.version('0.0.0');
 
 Commands.forEach((command) => {
-  Object.keys(command).reduce((program, key) => {
-    switch(key) {
+  Object.keys(command).reduce((control, key) => {
+    switch (key) {
       case 'options':
-        command[key].forEach(option => program = program.option(...option))
-        return program;
+        let step;
+        command[key].forEach(option => { step = control.option(...option); });
+        return step;
       case 'action':
-        return program.action((...ops) => { new command.action().execute(...ops) });
+        return control.action((...ops) => { new command.action().execute(...ops); });
       default:
-        return program[key](command[key])
+        return control[key](command[key]);
     }
   }, program);
 });

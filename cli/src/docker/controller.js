@@ -1,21 +1,20 @@
-'use strict';
-
-import { DEFAULT_LEVEL, DEFAULT_REGION, DEFAULT_PORT } from '../constants';
-import State from './state';
-import Redirect from './redirect';
 import Docker from 'dockerode';
 import Promise from 'bluebird';
 import shell from 'shelljs';
+
+import { DEFAULT_LEVEL, DEFAULT_REGION, DEFAULT_PORT } from '../constants';
+import State from './state';
+import redirect from './redirect';
 
 class Controller {
   constructor(profile, { image, statePath }) {
     this.profile = profile;
     this.image = image;
-    if(statePath) this.state = new State(statePath.replace(/^\~/, process.env.HOME));
+    if (statePath) this.state = new State(statePath.replace(/^~/, process.env.HOME));
   }
 
   get Docker() {
-    return new Docker()
+    return new Docker();
   }
 
   get secret() {
@@ -23,19 +22,21 @@ class Controller {
   }
 
   get identifier() {
-    var user = this.profile.user || 'user';
-    var hostname = shell.exec('hostname', { silent: true });
+    const user = this.profile.user || 'user';
+    const hostname = shell.exec('hostname', { silent: true });
 
-    if(hostname.code !== 0) {
-      return `${user}@unknown`;
+    let name;
+    if (hostname.code !== 0) {
+      name = `${user}@unknown`;
     } else {
-      var host = hostname.stdout.replace(/(\r\n|\n|\r)/gm,"");
-      return `${user}@${host}`;
+      const host = hostname.stdout.replace(/(\r\n|\n|\r)/gm, '');
+      name = `${user}@${host}`;
     }
+    return name;
   }
 
   get endpoint() {
-    let { id, region = DEFAULT_REGION, level = DEFAULT_LEVEL } = this.profile;
+    const { id, region = DEFAULT_REGION, level = DEFAULT_LEVEL } = this.profile;
     return `${id}.execute-api.${region}.amazonaws.com/${level}`;
   }
 
@@ -49,42 +50,42 @@ class Controller {
           `GRAIN_ENDPOINT=${this.endpoint}`,
           `GRAIN_IDENTIFIER=${this.identifier}`,
           `LISTEN_ON=${port}`,
-          `SERVER_NAME=127.0.0.1`
+          'SERVER_NAME=127.0.0.1',
         ],
         ExposedPorts: this.withPortMappingKey(port, {}),
         HostConfig: {
-          PortBindings: this.withPortMappingKey(port, [{ "HostPort": `${port}` }])
-        }
+          PortBindings: this.withPortMappingKey(port, [{ HostPort: `${port}` }]),
+        },
       },
-      start: {}
+      start: {},
     };
   }
 
   stop() {
     return new Promise((resolve, reject) => {
       this.state.read().then((id) => {
-        if( ! id) {
-          resolve()
+        if (!id) {
+          resolve();
         } else {
-          var container = this.Docker.getContainer(id);
-          if( ! container) {
-            resolve()
+          const container = this.Docker.getContainer(id);
+          if (!container) {
+            resolve();
           } else {
-            container.stop((err, data) => {
-              if(err && err.statusCode != 304) {
-                reject(err);
+            container.stop((stopErr) => {
+              if (stopErr && stopErr.statusCode !== 304) {
+                reject(stopErr);
               } else {
-                container.remove((err, data) => {
-                  if(err) {
-                    reject(err);
+                container.remove((removeErr) => {
+                  if (removeErr) {
+                    reject(removeErr);
                   } else {
                     this.state.delete().then(() => {
-                      Redirect({}).teardown().then(resolve);
+                      redirect({}).teardown().then(resolve);
                     }).catch(reject);
                   }
                 });
               }
-            })
+            });
           }
         }
       }).catch(reject);
@@ -94,59 +95,59 @@ class Controller {
   resume() {
     return new Promise((resolve, reject) => {
       this.state.read().then((id) => {
-        if( ! id) {
+        if (!id) {
           reject(new Error('No existing profile to resume'));
         } else {
-          var container = this.Docker.getContainer(id);
-          if( ! container) {
+          const container = this.Docker.getContainer(id);
+          if (!container) {
             reject(new Error('Existing state. But container not found'));
           } else {
-            container.start({}, (err, data) => {
-              if(err) {
-                reject(err, container);
+            container.start({}, (startErr) => {
+              if (startErr) {
+                reject(startErr, container);
               } else {
-                container.inspect((err, data) => {
-                  if(err) {
-                    reject(new Error('Existing state. Container started. Could not determine port.'))
+                container.inspect((inspectErr, data) => {
+                  if (inspectErr) {
+                    reject(new Error('Existing state. Container started. Could not determine port.'));
                   } else {
-                    var port = data.Config.Env.join(',').match(/LISTEN_ON=([0-9]+)\,/)[1];
-                    var redirect = Redirect({ port });
-                    redirect.setup().then(() => { resolve(data, container) }).catch(reject);
+                    const port = data.Config.Env.join(',').match(/LISTEN_ON=([0-9]+)\,/)[1];
+                    const redirector = redirect({ port });
+                    redirector.setup().then(() => { resolve(data, container); }).catch(reject);
                   }
-                })
+                });
               }
-            })
+            });
           }
         }
-      })
+      });
     });
   }
 
   start({ port = DEFAULT_PORT }) {
-    let { create, start } = this.options({ port });
+    const { create, start } = this.options({ port });
     return new Promise((resolve, reject) => {
-      this.Docker.createContainer(create, (err, container) => {
-        if(err) {
-          reject(container);
+      this.Docker.createContainer(create, (createErr, container) => {
+        if (createErr) {
+          reject(createErr, container);
         } else {
-          container.start(start, (err, data) => {
-            if(err) {
-              reject(err, container);
+          container.start(start, (startErr, data) => {
+            if (startErr) {
+              reject(startErr, container);
             } else {
               this.state.write(container.id).then(() => {
-                var redirect = Redirect({ port });
-                redirect.setup().then(() => { resolve(data, container) }).catch(reject);
+                const redirector = redirect({ port });
+                redirector.setup().then(() => { resolve(data, container); }).catch(reject);
               }).catch(reject);
             }
-          })
+          });
         }
       });
     });
   }
 
   withPortMappingKey(port, value) {
-    var obj = {};
-    obj[`${port}/tcp`] = value
+    const obj = {};
+    obj[`${port}/tcp`] = value;
     return obj;
   }
 }

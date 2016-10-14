@@ -12,7 +12,8 @@
     "toml": "2.3.0",
     "dockerode": "2.3.1",
     "shelljs": "0.7.4",
-    "request": "2.75.0"
+    "request": "2.75.0",
+    "bluebird": "3.4.6"
   },
   "devDependencies": {
     "babel-register": "^6.11.6",
@@ -60,6 +61,7 @@
     "test:smoke": "NODE_ENV=test nyc mocha ./smoke-tests",
     "test:clean": "NODE_ENV=test node ./test/mocha.cleanup.js",
     "prepublish": "npm run compile",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "lint:fix": "eslint --fix ./src"
   }
 }

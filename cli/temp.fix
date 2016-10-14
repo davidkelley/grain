@@ -1,0 +1,94 @@
+
+> grain@0.1.0 lint:fix /Users/david/github.com/davidkelley/grain/cli
+> eslint --fix ./src
+
+The react/require-extension rule is deprecated. Please use the import/extensions rule from eslint-plugin-import instead.
+
+/Users/david/github.com/davidkelley/grain/cli/src/cli.js
+  3:1   warning  Missing JSDoc comment  require-jsdoc
+  4:10  warning  Missing JSDoc comment  require-jsdoc
+  8:10  warning  Missing JSDoc comment  require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/commands/index.js
+  15:1  error  Line 15 exceeds the maximum line length of 100  max-len
+  23:1  error  Line 23 exceeds the maximum line length of 100  max-len
+  30:1  error  Line 30 exceeds the maximum line length of 100  max-len
+  36:1  error  Line 36 exceeds the maximum line length of 100  max-len
+  37:1  error  Line 37 exceeds the maximum line length of 100  max-len
+  38:1  error  Line 38 exceeds the maximum line length of 100  max-len
+
+/Users/david/github.com/davidkelley/grain/cli/src/commands/login/index.js
+   1:1   error    'bluebird' should be listed in the project's dependencies. Run 'npm i -S bluebird' to add it  import/no-extraneous-dependencies
+   2:1   error    'request' should be listed in the project's dependencies. Run 'npm i -S request' to add it    import/no-extraneous-dependencies
+   3:1   error    'shelljs' should be listed in the project's dependencies. Run 'npm i -S shelljs' to add it    import/no-extraneous-dependencies
+  11:1   warning  Missing JSDoc comment                                                                         require-jsdoc
+  12:10  warning  Missing JSDoc comment                                                                         require-jsdoc
+  33:6   warning  Missing JSDoc comment                                                                         require-jsdoc
+  38:1   error    Line 38 exceeds the maximum line length of 100                                                max-len
+  45:8   warning  Missing JSDoc comment                                                                         require-jsdoc
+  62:14  warning  Missing JSDoc comment                                                                         require-jsdoc
+  81:7   warning  Missing JSDoc comment                                                                         require-jsdoc
+  93:14  warning  Missing JSDoc comment                                                                         require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/commands/resume/index.js
+  4:1   warning  Missing JSDoc comment  require-jsdoc
+  5:10  warning  Missing JSDoc comment  require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/commands/stop/index.js
+  6:1   warning  Missing JSDoc comment  require-jsdoc
+  7:10  warning  Missing JSDoc comment  require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/commands/use/index.js
+  1:1   error    'bluebird' should be listed in the project's dependencies. Run 'npm i -S bluebird' to add it  import/no-extraneous-dependencies
+  7:1   warning  Missing JSDoc comment                                                                         require-jsdoc
+  9:10  warning  Missing JSDoc comment                                                                         require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/docker/controller.js
+    9:1   warning  Missing JSDoc comment                            require-jsdoc
+   10:14  warning  Missing JSDoc comment                            require-jsdoc
+   16:13  warning  Missing JSDoc comment                            require-jsdoc
+   20:13  warning  Missing JSDoc comment                            require-jsdoc
+   24:17  warning  Missing JSDoc comment                            require-jsdoc
+   38:15  warning  Missing JSDoc comment                            require-jsdoc
+   43:10  warning  Missing JSDoc comment                            require-jsdoc
+   64:7   warning  Missing JSDoc comment                            require-jsdoc
+   75:30  error    'err' is not defined                             no-undef
+   95:9   warning  Missing JSDoc comment                            require-jsdoc
+  111:1   error    Line 111 exceeds the maximum line length of 100  max-len
+  113:85  error    Unnecessary escape character: \,                 no-useless-escape
+  126:8   warning  Missing JSDoc comment                            require-jsdoc
+  133:35  error    'err' is already declared in the upper scope     no-shadow
+  148:21  warning  Missing JSDoc comment                            require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/docker/redirect.js
+   8:1   warning  Missing JSDoc comment                           require-jsdoc
+   9:14  warning  Missing JSDoc comment                           require-jsdoc
+  17:1   warning  Missing JSDoc comment                           require-jsdoc
+  18:8   warning  Missing JSDoc comment                           require-jsdoc
+  36:11  warning  Missing JSDoc comment                           require-jsdoc
+  47:12  warning  Missing JSDoc comment                           require-jsdoc
+  52:11  warning  Missing JSDoc comment                           require-jsdoc
+  54:1   error    Line 54 exceeds the maximum line length of 100  max-len
+  57:13  warning  Missing JSDoc comment                           require-jsdoc
+  62:16  warning  Missing JSDoc comment                           require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/docker/state.js
+   4:1   warning  Missing JSDoc comment  require-jsdoc
+   5:14  warning  Missing JSDoc comment  require-jsdoc
+   9:9   warning  Missing JSDoc comment  require-jsdoc
+  21:8   warning  Missing JSDoc comment  require-jsdoc
+  26:7   warning  Missing JSDoc comment  require-jsdoc
+
+/Users/david/github.com/davidkelley/grain/cli/src/index.js
+  11:9   error  All 'var' declarations must be at the top of the function scope  vars-on-top
+  11:9   error  Unexpected var, use let or const instead                         no-var
+  15:57  error  A constructor name should not start with a lowercase letter      new-cap
+
+/Users/david/github.com/davidkelley/grain/cli/src/profiler.js
+   5:1   warning  Missing JSDoc comment  require-jsdoc
+   6:14  warning  Missing JSDoc comment  require-jsdoc
+  10:10  warning  Missing JSDoc comment  require-jsdoc
+  30:7   warning  Missing JSDoc comment  require-jsdoc
+
+✖ 64 problems (19 errors, 45 warnings)
+

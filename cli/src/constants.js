@@ -8,7 +8,7 @@ export const DEFAULT_LEVEL = 'development';
 
 export const DEFAULT_REGION = 'us-east-1';
 
-export const DEFAULT_DOCKER_IMAGE = 'davidkelley/grain:v1';
+export const DEFAULT_DOCKER_IMAGE = 'davidkelley/grain:client-v0.1.0';
 
 export const DEFAULT_PORT = 43566;
 
