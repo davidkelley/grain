@@ -1,6 +1,6 @@
 'use strict';
 
-import { OK, BAD_REQUEST, ERROR } from '../constants';
+import { OK, BAD_REQUEST, ERROR, CREATED, FORBIDDEN } from '../constants';
 import Promise from 'bluebird';
 
 export function Response(cb) {
@@ -8,6 +8,10 @@ export function Response(cb) {
     switch(status) {
       case OK:
         return 200;
+      case CREATED:
+        return 201;
+      case FORBIDDEN:
+        return 403;
       case BAD_REQUEST:
         return 422;
       case ERROR:
@@ -37,12 +41,36 @@ class Request {
     this.cb = Response(cb);
   }
 
+  get accountId() {
+    return this.context.invokedFunctionArn.split(':')[4];
+  }
+
+  get stage() {
+    return this.event.stage;
+  }
+
+  get apiId() {
+    return this.headers.Host.match(/^([a-z0-9]+)\..+$/i)[1];
+  }
+
+  get apiKeyValue() {
+    this.identity.apikey;
+  }
+
   get headers() {
     return this.event.headers
   }
 
   get path() {
     return this.event.path;
+  }
+
+  get identity() {
+    return this.event.identity;
+  }
+
+  get body() {
+    return this.event.body;
   }
 }
 

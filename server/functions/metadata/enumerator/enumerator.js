@@ -10,10 +10,6 @@ const REGION = process.env.AWS_REGION;
 const LIST_ROLES = 'listRoles';
 
 class Enumerator extends Request {
-  get stage() {
-    return this.event.stage;
-  }
-
   perform() {
     let { cb, stage } = this;
     this.iam(LIST_ROLES, { PathPrefix: `${PATH}/${REGION}/${stage}` }).then((data) => {

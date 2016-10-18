@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: nodejs4.3
   apiKeys:
-    - master
+    - 'grain-${opt:stage}-${opt:region}-master'
   iamRoleStatements:
     - Effect: "Allow"
       Action: "*"
@@ -44,8 +44,42 @@ functions:
             headers:
               Cache-Control: "'max-age=1800'"
 
+  createUser:
+    handler: handler.createUser
+    description: "Creates new users for Grain: '${opt:stage}'"
+    events:
+      - http:
+          path: admin
+          method: POST
+          private: true
+          integration: lambda
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+
+  deleteUser:
+    handler: handler.deleteUser
+    description: "Handles deleting users for Grain: '${opt:stage}'"
+    events:
+      - http:
+          path: admin/{user}
+          method: DELETE
+          private: true
+          integration: lambda
+          response:
+            headers:
+              Content-Type: "'text/plain'"
+
 resources:
   Resources:
+    ProfileBucket:
+      Type: "AWS::S3::Bucket"
+      Properties:
+        BucketName: { "Fn::Join" : ["", ["grain-", { "Ref" : "AWS::AccountId" }, "-${opt:stage}-${opt:region}"] ] }
+        LifecycleConfiguration:
+          Rules:
+            - Status: "Enabled"
+              ExpirationInDays: "1"
     Role:
       Type: "AWS::IAM::Role"
       Properties:

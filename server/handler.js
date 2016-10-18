@@ -4,5 +4,7 @@
 
 import enumerator from './functions/metadata/enumerator';
 import credentials from './functions/metadata/credentials';
+import createUser from './functions/admin/create';
+import deleteUser from './functions/admin/delete';
 
-export { enumerator, credentials };
+export { enumerator, credentials, createUser, deleteUser };

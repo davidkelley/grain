@@ -1,0 +1,6 @@
+{
+  "name": "delete",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./delete.js"
+}
