@@ -1,14 +1,14 @@
-
-
 import CLI from '../../cli';
 import Controller from '../../docker/controller';
 
 class Stop extends CLI {
-  execute({ statePath }) {
+  execute(profile, { profilesPath }) {
     const { cli, onError } = this;
     cli.spinner('Stopping..');
-    new Controller(null, { statePath }).stop().then(() => {
-      cli.spinner('Stopping.. done!', true);
+    this.profiler(profilesPath, profile).then((data) => {
+      new Controller(data).stop().then(() => {
+        cli.spinner('Stopping.. done!', true);
+      }).catch(onError);
     }).catch(onError);
   }
 }

@@ -34,7 +34,8 @@
     "eslint-plugin-react": "^6.0.0",
     "mocha": "^3.0.2",
     "nodemon": "^1.10.0",
-    "nyc": "^7.1.0"
+    "nyc": "^7.1.0",
+    "license-checker": "8.0.0"
   },
   "nyc": {
     "include": [

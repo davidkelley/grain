@@ -16,14 +16,20 @@ By default, Grain CLI uses a "profiles" configuration file located here, `~/.gra
 
 ```
 [development]
+user=david
 id="dd7y3i3faj"
 key="tEGxwoxlHU2nHLqT0wJCk32Sj7dp4Nef6SrIv0EG"
 region="us-east-1"
+ip=127.1.34.200
+port=32456
+state=~/.my-custom-state-path
+image=davidkelley/grain:client-v0.0.1
 
 [staging]
 id="66939faddd"
 key="...."
 level="staging"
+ip=127.1.34.200
 
 [production]
 id="...."

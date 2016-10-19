@@ -1,8 +1,19 @@
 import cli from 'cli';
 
+import Profiler from './profiler';
+
 class CLI {
   get cli() {
     return cli;
+  }
+
+  profiler(profilesPath, profile) {
+    return new Promise((resolve, reject) => {
+      new Profiler({ profilesPath }).profile(profile).then((data) => {
+        resolve(data);
+      }).catch(this.onError)
+        .catch(reject);
+    });
   }
 
   onError(err) {

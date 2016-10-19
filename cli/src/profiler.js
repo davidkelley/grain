@@ -2,6 +2,19 @@ import Promise from 'bluebird';
 import toml from 'toml';
 import fs from 'fs';
 
+import { DEFAULT_REGION, DEFAULT_LEVEL, DEFAULT_IP, DEFAULT_PORT, GRAIN_STATE_PATH, DEFAULT_DOCKER_IMAGE } from './constants';
+
+class Profile {
+  constructor(obj) {
+    Object.keys.forEach((key) => { this[key] = obj[key] });
+  }
+
+  endpoint() {
+    const { id, region, level } = this;
+    return `${id}.execute-api.${region}.amazonaws.com/${level}`;
+  }
+}
+
 class Profiler {
   constructor({ profilesPath }) {
     this.path = profilesPath.replace(/^~/, process.env.HOME);
@@ -21,10 +34,24 @@ class Profiler {
         if (!profile) {
           reject(new Error(`Profile "${name}" not found.`));
         } else {
-          resolve(profile);
+          resolve(new Profile(this.defaults(profile)));
         }
       });
     });
+  }
+
+  defaults({
+    id,
+    key,
+    user,
+    region = DEFAULT_REGION,
+    level = DEFAULT_LEVEL,
+    ip = DEFAULT_IP,
+    port = DEFAULT_PORT,
+    state = GRAIN_STATE_PATH,
+    image = DEFAULT_DOCKER_IMAGE
+  }) {
+    return { id, key, user, region, level, ip, port, state, image };
   }
 
   read() {

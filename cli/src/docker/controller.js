@@ -7,10 +7,11 @@ import State from './state';
 import redirect from './redirect';
 
 class Controller {
-  constructor(profile, { image, statePath }) {
+  constructor(profile) {
     this.profile = profile;
-    this.image = image;
-    if (statePath) this.state = new State(statePath.replace(/^~/, process.env.HOME));
+    if(this.profile && this.profile.state) {
+      this.state = new State(this.profile.state.replace(/^~/, process.env.HOME));
+    }
   }
 
   get Docker() {
@@ -35,26 +36,23 @@ class Controller {
     return name;
   }
 
-  get endpoint() {
-    const { id, region = DEFAULT_REGION, level = DEFAULT_LEVEL } = this.profile;
-    return `${id}.execute-api.${region}.amazonaws.com/${level}`;
-  }
-
-  options({ port = DEFAULT_PORT }) {
+  options() {
+    const { withPortMappingKey, secret, identifier } = this;
+    const { port, image, endpoint } = this.profile;
     return {
       create: {
-        Image: this.image,
+        Image: image,
         Tty: false,
         Env: [
-          `GRAIN_SECRET=${this.secret}`,
-          `GRAIN_ENDPOINT=${this.endpoint}`,
-          `GRAIN_IDENTIFIER=${this.identifier}`,
+          `GRAIN_SECRET=${secret}`,
+          `GRAIN_ENDPOINT=${endpoint}`,
+          `GRAIN_IDENTIFIER=${identifier}`,
           `LISTEN_ON=${port}`,
           'SERVER_NAME=127.0.0.1',
         ],
-        ExposedPorts: this.withPortMappingKey(port, {}),
+        ExposedPorts: withPortMappingKey(port, {}),
         HostConfig: {
-          PortBindings: this.withPortMappingKey(port, [{ HostPort: `${port}` }]),
+          PortBindings: withPortMappingKey(port, [{ HostPort: `${port}` }]),
         },
       },
       start: {},
@@ -94,6 +92,7 @@ class Controller {
 
   resume() {
     return new Promise((resolve, reject) => {
+      const { ip } = this.profile;
       this.state.read().then((id) => {
         if (!id) {
           reject(new Error('No existing profile to resume'));
@@ -111,7 +110,7 @@ class Controller {
                     reject(new Error('Existing state. Container started. Could not determine port.'));
                   } else {
                     const port = data.Config.Env.join(',').match(/LISTEN_ON=([0-9]+)\,/)[1];
-                    const redirector = redirect({ port });
+                    const redirector = redirect({ port, ip });
                     redirector.setup().then(() => { resolve(data, container); }).catch(reject);
                   }
                 });
@@ -123,8 +122,9 @@ class Controller {
     });
   }
 
-  start({ port = DEFAULT_PORT }) {
-    const { create, start } = this.options({ port });
+  start() {
+    const { create, start } = this.options();
+    const { port, ip } = this.profile;
     return new Promise((resolve, reject) => {
       this.Docker.createContainer(create, (createErr, container) => {
         if (createErr) {
@@ -135,7 +135,7 @@ class Controller {
               reject(startErr, container);
             } else {
               this.state.write(container.id).then(() => {
-                const redirector = redirect({ port });
+                const redirector = redirect({ port, ip });
                 redirector.setup().then(() => { resolve(data, container); }).catch(reject);
               }).catch(reject);
             }

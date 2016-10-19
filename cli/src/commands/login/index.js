@@ -9,23 +9,25 @@ const FEDERATION_URL = 'https://signin.aws.amazon.com/federation';
 const CONSOLE_URL = 'https://console.aws.amazon.com/';
 
 class Login extends CLI {
-  execute(alias, page = '') {
-    const { cli } = this;
+  execute(profile, alias, page = '', { profilesPath }) {
+    const { cli, onError } = this;
     return new Promise((resolve, reject) => {
       if (!alias) {
         cli.fatal('--alias is required. Found here: https://<alias>.signin.aws.amazon.com/');
       } else {
         cli.spinner('Opening AWS console..');
-        this.url('http://169.254.169.254', alias, page).then((url) => {
-          const open = shell.exec(`open "${url}"`, { silent: true });
-          if (open.code !== 0) {
-            cli.fatal(`Unable to open URL: "${url}"`);
-            reject();
-          } else {
-            cli.spinner('Opening AWS console.. done!', true);
-            resolve();
-          }
-        }).catch(reject);
+        this.profiler(profilesPath, profile).then((data) => {
+          this.url(`http://${data.ip}`, alias, page).then((url) => {
+            const open = shell.exec(`open "${url}"`, { silent: true });
+            if (open.code !== 0) {
+              cli.fatal(`Unable to open URL: "${url}"`);
+              reject();
+            } else {
+              cli.spinner('Opening AWS console.. done!', true);
+              resolve();
+            }
+          }).catch(reject);
+        }).catch(onError);
       }
     });
   }

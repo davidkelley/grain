@@ -6,9 +6,9 @@ import State from './state';
 
 
 class Redirect {
-  constructor({ remote = DEFAULT_IP, host = '127.0.0.1', port = DEFAULT_PORT }) {
+  constructor({ ip = DEFAULT_IP, host = '127.0.0.1', port = DEFAULT_PORT }) {
     this.state = new State(`${__dirname}/grain-redirect-path.conf`);
-    this.remote = remote;
+    this.remote = ip;
     this.port = port;
     this.host = host;
   }
