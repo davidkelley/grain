@@ -56,10 +56,38 @@ Once you have your profiles configuration file setup, you can begin to use the C
 
 ## Commands
 
-#### `grain init`
+#### `use <profile>`
 
-Initialises the Grain CLI and prepares it for first-use. Performs the following:
+This command emulates the EC2 Metadata Service locally. It creates and configures the proxy docker container, using the profile configuration you have provided. It also sets up a local redirect on the host.
 
-* Ensures the profiles file can be located and parsed correctly.
-* Checks to ensure that an IP alias can be setup locally.
-* Pulls the configured Docker Image.
+**Example:** `$ grain use development`
+
+This would configure your local EC2 metadata service to use the development profile when querying against any AWS resources.
+
+#### `login <profile> <alias> [page]`
+
+Use this command directly from the terminal to use a configured profile to open a browser window, automatically logging you into the AWS Console at a specific page (optional).
+
+**Example:** `$ grain login staging qa23 cloudformation`
+
+This command would open your default browser (as configured via `open`), logging you into the account alias (`qa23`) at the AWS Console Cloudformation page.
+
+#### `stop <profile>`
+
+Stops any currently running profile, started via the `use` command, tearing down any container resources and IP redirects.
+
+#### `resume <profile>`
+
+Resumes a previously started profile. This command is handy for when you have recently restarted your machine.
+
+#### `admin create <profile> <user>`
+
+Create another user. This function returns a signed URL that points to a profile that another team member or user can download. However, the URL it provides is only valid for 60 seconds. The `<user>` parameter you provide will be used to identify them when making requests using the AWS API.
+
+#### `admin remove <profile> <user>`
+
+Remove another user by name.
+
+#### `env <profile>`
+
+When you need credentials in your environment, you can use this command to export AWS CLI recognised environment variables. To setup variables quickly, use `export $(grain env development)`, for example.
