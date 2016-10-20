@@ -7,13 +7,14 @@ class CLI {
     return cli;
   }
 
-  profiler(profilesPath, profile) {
-    return new Promise((resolve, reject) => {
-      new Profiler({ profilesPath }).profile(profile).then((data) => {
-        resolve(data);
-      }).catch(this.onError)
-        .catch(reject);
-    });
+  constructor(options) {
+    this.options = options;
+    this.profilesPath = this.options.parent.profilesPath;
+  }
+
+  profiler(profile) {
+    const { profilesPath } = this;
+    return new Profiler({ profilesPath }).profile(profile);
   }
 
   onError(err) {

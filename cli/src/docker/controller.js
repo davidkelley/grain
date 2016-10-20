@@ -22,23 +22,9 @@ class Controller {
     return this.profile.key;
   }
 
-  get identifier() {
-    const user = this.profile.user || 'user';
-    const hostname = shell.exec('hostname', { silent: true });
-
-    let name;
-    if (hostname.code !== 0) {
-      name = `${user}@unknown`;
-    } else {
-      const host = hostname.stdout.replace(/(\r\n|\n|\r)/gm, '');
-      name = `${user}@${host}`;
-    }
-    return name;
-  }
-
   options() {
-    const { withPortMappingKey, secret, identifier } = this;
-    const { port, image, endpoint } = this.profile;
+    const { withPortMappingKey, secret } = this;
+    const { port, image, endpoint, identifier } = this.profile;
     return {
       create: {
         Image: image,
@@ -78,7 +64,8 @@ class Controller {
                     reject(removeErr);
                   } else {
                     this.state.delete().then(() => {
-                      redirect({}).teardown().then(resolve);
+                      const { ip } = this.profile;
+                      redirect({ ip }).teardown().then(resolve);
                     }).catch(reject);
                   }
                 });

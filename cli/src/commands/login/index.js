@@ -9,15 +9,15 @@ const FEDERATION_URL = 'https://signin.aws.amazon.com/federation';
 const CONSOLE_URL = 'https://console.aws.amazon.com/';
 
 class Login extends CLI {
-  execute(profile, alias, page = '', { profilesPath }) {
+  execute(profile, alias, page = '') {
     const { cli, onError } = this;
     return new Promise((resolve, reject) => {
-      if (!alias) {
+      if ( ! alias) {
         cli.fatal('--alias is required. Found here: https://<alias>.signin.aws.amazon.com/');
       } else {
         cli.spinner('Opening AWS console..');
-        this.profiler(profilesPath, profile).then((data) => {
-          this.url(`http://${data.ip}`, alias, page).then((url) => {
+        this.profiler(profile).then((data) => {
+          this.url(`https://${data.endpoint}`, data.headers, alias, page).then((url) => {
             const open = shell.exec(`open "${url}"`, { silent: true });
             if (open.code !== 0) {
               cli.fatal(`Unable to open URL: "${url}"`);
@@ -32,9 +32,9 @@ class Login extends CLI {
     });
   }
 
-  url(root, alias, page = '') {
+  url(url, headers, alias, page = '') {
     return new Promise((resolve, reject) => {
-      this.token(root).then((token) => {
+      this.token(url, headers).then((token) => {
         const issuer = encodeURIComponent(`https://${alias}.signin.aws.amazon.com/`);
         const destination = encodeURIComponent(`${CONSOLE_URL}/${page}`);
         const query = `Action=login&Issuer=${issuer}&Destination=${destination}&SigninToken=${token}`;
@@ -44,9 +44,9 @@ class Login extends CLI {
     }).catch(this.onHttpError);
   }
 
-  token(root) {
+  token(url, headers) {
     return new Promise((resolve, reject) => {
-      this.credentials(root).then((keys) => {
+      this.credentials(url, headers).then((keys) => {
         const encoded = encodeURIComponent(JSON.stringify(keys));
         const query = `Action=getSigninToken&Session=${encoded}`;
         request(`${FEDERATION_URL}?${query}`, (err, res, body) => {
@@ -61,10 +61,11 @@ class Login extends CLI {
     }).catch(this.onHttpError);
   }
 
-  credentials(root) {
+  credentials(url, headers) {
     return new Promise((resolve, reject) => {
-      this.role(root).then((role) => {
-        request(`${root}/latest/meta-data/iam/security-credentials/${role}`, (err, res, body) => {
+      this.role(url, headers).then((role) => {
+        url = `${url}/latest/meta-data/iam/security-credentials/${role}`
+        request({ url, headers }, (err, res, body) => {
           if (err) {
             reject(res, body);
           } else {
@@ -80,9 +81,10 @@ class Login extends CLI {
     });
   }
 
-  role(root) {
+  role(url, headers) {
     return new Promise((resolve, reject) => {
-      request(`${root}/latest/meta-data/iam/security-credentials`, (err, res, body) => {
+      url = `${url}/latest/meta-data/iam/security-credentials`;
+      request({ url, headers }, (err, res, body) => {
         if (err) {
           reject(res, body);
         } else {

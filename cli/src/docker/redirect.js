@@ -1,12 +1,10 @@
 import Promise from 'bluebird';
 import shell from 'shelljs';
 
-import { DEFAULT_PORT, DEFAULT_IP } from '../constants';
 import State from './state';
 
-
 class Redirect {
-  constructor({ ip = DEFAULT_IP, host = '127.0.0.1', port = DEFAULT_PORT }) {
+  constructor({ ip, host = '127.0.0.1', port }) {
     this.state = new State(`${__dirname}/grain-redirect-path.conf`);
     this.remote = ip;
     this.port = port;
@@ -18,13 +16,14 @@ class PFCTL extends Redirect {
   setup() {
     return new Promise((resolve, reject) => {
       this.state.write(`${this.expr}\n`).then(() => {
-        const alias = shell.exec(this.alias, { silent: true });
+        const { entity, remote } = this;
+        const alias = shell.exec(`ifconfig ${entity} alias ${remote}`, { silent: true });
         if (alias.code !== 0) {
-          reject(new Error(`Unable to alias IP: ${alias.stdout}`));
+          reject(new Error(`Unable to alias IP: ${alias.stderr}`));
         } else {
-          const redirect = shell.exec(`pfctl -F all -f ${this.state.path}`, { silent: true });
+          const redirect = shell.exec(`pfctl -F all -ef ${this.state.path}`, { silent: true });
           if (redirect.code !== 0) {
-            reject(new Error(`Unable to setup IP redirect: ${redirect.stdout}`));
+            reject(new Error(`Unable to setup IP redirect: ${redirect.stderr}`));
           } else {
             resolve();
           }
@@ -35,18 +34,19 @@ class PFCTL extends Redirect {
 
   teardown() {
     return new Promise((resolve, reject) => {
-      const teardown = shell.exec('pfctl -F all', { silent: true });
-      if (teardown.code !== 0) {
-        reject(new Error(`Unable to unlink IP alias: ${teardown}`));
+      const { entity, remote } = this;
+      const alias = shell.exec(`ifconfig ${entity} -alias ${remote}`, { silent: true });
+      if (alias.code !== 0) {
+        reject(new Error(`Unable to unalias IP: ${alias.stderr}`));
       } else {
-        resolve();
+        const teardown = shell.exec('pfctl -F all', { silent: true });
+        if (teardown.code !== 0) {
+          reject(new Error(`Unable to unlink IP alias: ${teardown.stderr}`));
+        } else {
+          resolve();
+        }
       }
     });
-  }
-
-  get alias() {
-    const { entity, remote } = this;
-    return `ifconfig ${entity} ${remote} alias`;
   }
 
   get expr() {

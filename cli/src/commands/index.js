@@ -1,3 +1,4 @@
+import Admin from './admin';
 import Use from './use';
 import Resume from './resume';
 import Stop from './stop';
@@ -5,6 +6,11 @@ import Login from './login';
 import Env from './env';
 
 export default [
+  {
+    command: 'admin <action> <profile> <user>',
+    description: 'Creates a new user for use this profile',
+    action: Admin
+  },
   {
     command: 'stop <profile>',
     description: 'Stops grain and tidies up profile resources',
@@ -16,8 +22,8 @@ export default [
     action: Resume,
   },
   {
-    command: 'env <profile> [region]',
-    description: 'Enables the quick export of AWS credentials to the current shell. Example: "$ export `grain env us-east-1`"',
+    command: 'env <profile>',
+    description: 'Enables the quick export of AWS credentials to the current shell. Example: "$ export `grain env development`"',
     action: Env
   },
   {

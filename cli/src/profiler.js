@@ -1,17 +1,45 @@
 import Promise from 'bluebird';
 import toml from 'toml';
 import fs from 'fs';
+import shell from 'shelljs';
 
-import { DEFAULT_REGION, DEFAULT_LEVEL, DEFAULT_IP, DEFAULT_PORT, GRAIN_STATE_PATH, DEFAULT_DOCKER_IMAGE } from './constants';
+import { DEFAULT_REGION,
+         DEFAULT_LEVEL,
+         DEFAULT_IP,
+         DEFAULT_PORT,
+         GRAIN_STATE_PATH,
+         DEFAULT_DOCKER_IMAGE } from './constants';
 
 class Profile {
   constructor(obj) {
-    Object.keys.forEach((key) => { this[key] = obj[key] });
+    Object.keys(obj).forEach((key) => { this[key] = obj[key] });
   }
 
-  endpoint() {
+  get endpoint() {
     const { id, region, level } = this;
     return `${id}.execute-api.${region}.amazonaws.com/${level}`;
+  }
+
+  get headers() {
+    const { key, identifier } = this;
+    return {
+      'X-Api-Key': key,
+      'X-Session-Identifier': identifier
+    }
+  }
+
+  get identifier() {
+    const user = this.user || 'user';
+    const hostname = shell.exec('hostname', { silent: true });
+
+    let name;
+    if (hostname.code !== 0) {
+      name = `${user}@unknown`;
+    } else {
+      const host = hostname.stdout.replace(/(\r\n|\n|\r)/gm, '');
+      name = `${user}@${host}`;
+    }
+    return name;
   }
 }
 

@@ -6,11 +6,11 @@ import CLI from '../../cli';
 
 class Use extends CLI {
 
-  execute(profile, { profilesPath, statePath, image }) {
+  execute(profile) {
     const { cli } = this;
     return new Promise((resolve, reject) => {
       cli.spinner(`Switching profile to ${profile}..`);
-      this.profiler(profilesPath, profile).then((data) => {
+      this.profiler(profile).then((data) => {
         this.container({ data }).then(() => {
           cli.spinner(`Switching profile to ${profile}.. done!`, true);
           resolve(profile);
@@ -22,20 +22,21 @@ class Use extends CLI {
   container({ data }) {
     return new Promise((resolve, reject) => {
       const controller = new Controller(data);
-      controller.stop({}).then(() => {
-        controller.start({}).then(() => {
-          this.check().then(resolve).catch(reject);
+      controller.stop().then(() => {
+        controller.start().then(() => {
+          const { ip } = data;
+          const url = `http://${ip}`;
+          this.check({ url }).then(resolve).catch(reject);
         }).catch(this.onError)
           .catch(reject);
       });
     });
   }
 
-  check() {
-    const ip = 'http://169.254.169.254';
+  check({ url }) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        request(`${ip}/latest/meta-data/iam/security-credentials`, (err, res, body) => {
+        request(`${url}/latest/meta-data/iam/security-credentials`, (err, res, body) => {
           if (err) {
             reject(new Error('Started but Server may be down.'));
           } else {

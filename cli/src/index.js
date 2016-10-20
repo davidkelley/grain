@@ -15,7 +15,7 @@ Commands.forEach((command) => {
         command[key].forEach(option => { step = control.option(...option); });
         return step;
       case 'action':
-        return control.action((...ops) => { new command.action().execute(...ops); });
+        return control.action((...ops) => { new command.action(ops[ops.length - 1]).execute(...ops); });
       default:
         return control[key](command[key]);
     }
